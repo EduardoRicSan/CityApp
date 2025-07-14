@@ -1,7 +1,9 @@
 package com.tablegroup.ualaapptest.navigation
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -17,14 +19,18 @@ import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 
 
 @Composable
-fun AppNavigation(viewModel: CityViewModel = hiltViewModel()) {
+fun AppNavigation(
+    viewModel: CityViewModel = hiltViewModel(),
+    modifier: Modifier,
+    ) {
     val navController = rememberNavController()
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
 
     NavHost(
         navController = navController,
-        startDestination = if (isLandscape) Screen.CityListMap.route else Screen.CityList.route
+        startDestination = if (isLandscape) Screen.CityListMap.route else Screen.CityList.route,
+        modifier = modifier
     ) {
 
         // Lista de ciudades
