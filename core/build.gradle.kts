@@ -49,6 +49,8 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    //permissions
+    implementation(libs.accompanist.permissions)
     //Room
     implementation(libs.room.ktx)
     implementation(libs.room.paging)

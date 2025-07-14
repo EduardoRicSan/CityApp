@@ -12,6 +12,7 @@ mockk = "1.13.5"
 lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
 composeBom = "2025.06.01"
+secretsGradlePlugin = "2.0.1"
 serialization = "1.8.0"
 ktor = "3.1.1"
 roomKtxVersion = "2.7.2"
@@ -31,8 +32,10 @@ coreSplashScreen = "1.0.1"
 material3-icons = "1.7.8"
 monitor = "1.7.2"
 junitKtx = "1.2.1"
+accompanist = "0.34.0"
 maps = "4.4.0"
-accompanist = "0.34.0-alpha"
+mapsUtils = "2.3.0"
+mapsPlatform = "19.2.0"
 
 
 [libraries]
@@ -87,6 +90,7 @@ datastore-preferences = { group = "androidx.datastore", name = "datastore-prefer
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 androidx-room-testing = { group = "androidx.room", name = "room-testing" }
@@ -97,7 +101,8 @@ material-icons-extended = { group = "androidx.compose.material", name = "materia
 androidx-monitor = { group = "androidx.test", name = "monitor", version.ref = "monitor" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps" }
-maps-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "maps" }
+maps-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsUtils" }
+maps-platform = { module = "com.google.android.gms:play-services-maps", version.ref = "mapsPlatform" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
 

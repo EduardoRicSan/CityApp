@@ -43,6 +43,8 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     ksp(libs.room.compiler)
+    //DataStore
+    implementation(libs.datastore.preferences)
     //Dagger-hilt
     implementation(libs.dagger.hilt)
     implementation(libs.androidx.monitor)

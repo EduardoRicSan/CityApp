@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.dagger.hilt)
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -19,6 +20,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders["MAPS_API_KEY"] = project.findProperty("MAPS_API_KEY") as? String ?: ""
+
     }
 
     buildTypes {
@@ -83,6 +87,12 @@ dependencies {
     implementation(libs.ktor.client.serialization)
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.dagger.hilt)
+
+    //maps
+    implementation(libs.maps.compose)
+    implementation(libs.maps.utils)
+    implementation(libs.maps.platform)
+    implementation(libs.accompanist.permissions)
 
 
     implementation(project(":designSystem"))

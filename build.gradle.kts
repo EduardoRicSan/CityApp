@@ -8,7 +8,9 @@ buildscript {
         classpath(libs.gradle)
         classpath(libs.kotlin.gradle)
         classpath(libs.dagger.hilt.agp)
+        classpath(libs.secrets.gradle.plugin)
     }
+
 }
 
 plugins {
