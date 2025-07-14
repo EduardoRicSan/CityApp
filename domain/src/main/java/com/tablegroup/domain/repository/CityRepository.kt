@@ -48,9 +48,12 @@ class CityRepository @Inject constructor(
             NetworkResult.Success(cities)
         }
 
+    fun getFavoriteIdsFlow(): Flow<Set<Int>> = cityDataStore.getFavoriteIdsFlow()
+
     suspend fun toggleFavorite(cityId: Int) {
         cityDataStore.toggleFavorite(cityId)
     }
+
 
     fun getFavoriteIds(): Flow<Set<Int>> = cityDataStore.getFavoriteIdsFlow()
 

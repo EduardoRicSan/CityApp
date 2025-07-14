@@ -40,23 +40,23 @@ class CityViewModel @Inject constructor(
     private val _onlyFavorites = MutableStateFlow(false)
     val onlyFavorites: StateFlow<Boolean> = _onlyFavorites.asStateFlow()
 
-    // Flow que emite la lista combinada y filtrada
     val filteredCities: StateFlow<NetworkResult<List<City>>> = combine(
-        getCitiesUseCase(),
-        getFavoriteIdsUseCase(),
+        getCitiesUseCase(),              // Flow<NetworkResult<List<City>>>
+        getFavoriteIdsUseCase(),         // Flow<Set<Int>>
         _searchQuery,
         _onlyFavorites
     ) { cityResult, favoriteIds, query, onlyFavs ->
 
         if (cityResult is NetworkResult.Success) {
-            val filtered = cityResult.data.filter { city ->
+            val filtered = cityResult.data.map { city ->
+                city.copy(isFavorite = favoriteIds.contains(city.id))
+            }.filter { city ->
                 city.name.startsWith(query, ignoreCase = true) &&
-                        (!onlyFavs || favoriteIds.contains(city.id))
+                        (!onlyFavs || city.isFavorite)
             }.sortedWith(compareBy({ it.name.lowercase() }, { it.country.lowercase() }))
 
             NetworkResult.Success(filtered)
         } else {
-            // Pasa el estado Error o Loading tal cual
             cityResult
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkResult.Loading())
@@ -78,7 +78,7 @@ class CityViewModel @Inject constructor(
 
     fun toggleFavorite(cityId: Int) {
         viewModelScope.launch {
-            toggleFavoriteUseCase(cityId)
+            toggleFavoriteUseCase.toggleFavorite(cityId)
         }
     }
 

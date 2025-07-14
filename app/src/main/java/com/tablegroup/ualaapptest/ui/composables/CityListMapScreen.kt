@@ -1,5 +1,6 @@
 package com.tablegroup.ualaapptest.ui.composables
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -11,26 +12,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tablegroup.domain.model.City
 import com.tablegroup.ualaapptest.navigation.RequestLocationPermission
 import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 
 @Composable
 fun CityListMapScreen(
-    viewModel: CityViewModel,
+    viewModel: CityViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    var selectedCity by remember { mutableStateOf<City?>(null) }
+    val selectedCity = rememberSaveable(stateSaver = NullableCitySaver) {
+        mutableStateOf<City?>(null)
+    }
 
     Row(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f)) {
             CityListScreen(
                 viewModel = viewModel,
-                onCityClick = { city -> selectedCity = city }
+                onCityClick = { city -> selectedCity.value = city }
             )
         }
         HorizontalDivider(
@@ -39,7 +45,7 @@ fun CityListMapScreen(
                 .width(1.dp)
         )
         Box(modifier = Modifier.weight(1f)) {
-            selectedCity?.let { city ->
+            selectedCity.value?.let { city ->
                 RequestLocationPermission {
                     CityMap(city = city)
                 }
@@ -49,3 +55,29 @@ fun CityListMapScreen(
         }
     }
 }
+
+
+val NullableCitySaver = Saver<City?, Map<String, Any>>(
+    save = { city ->
+        city?.let {
+            mapOf(
+                "id" to it.id,
+                "name" to it.name,
+                "country" to it.country,
+                "lat" to it.lat,
+                "lon" to it.lon,
+                "isFavorite" to it.isFavorite
+            )
+        } ?: emptyMap()
+    },
+    restore = { map ->
+        if (map.isEmpty()) null else City(
+            id = map["id"] as Int,
+            name = map["name"] as String,
+            country = map["country"] as String,
+            lat = map["lat"] as Double,
+            lon = map["lon"] as Double,
+            isFavorite = map["isFavorite"] as Boolean
+        )
+    }
+)

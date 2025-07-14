@@ -1,12 +1,17 @@
 package com.tablegroup.domain.useCase
 
 import com.tablegroup.domain.repository.CityRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ToggleFavoriteUseCase @Inject constructor(
     private val repository: CityRepository
 ) {
-    suspend operator fun invoke(cityId: Int) {
+    operator fun invoke(): Flow<Set<Int>> {
+        return repository.getFavoriteIdsFlow()
+    }
+
+    suspend fun toggleFavorite(cityId: Int) {
         repository.toggleFavorite(cityId)
     }
 }

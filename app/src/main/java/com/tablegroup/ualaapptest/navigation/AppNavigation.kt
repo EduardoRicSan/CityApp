@@ -24,12 +24,10 @@ fun AppNavigation(
     modifier: Modifier,
     ) {
     val navController = rememberNavController()
-    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-
 
     NavHost(
         navController = navController,
-        startDestination = if (isLandscape) Screen.CityListMap.route else Screen.CityList.route,
+        startDestination = Screen.CityList.route,
         modifier = modifier
     ) {
 
@@ -56,8 +54,5 @@ fun AppNavigation(
             )
         }
 
-        composable(Screen.CityListMap.route) {
-            CityListMapScreen(viewModel = viewModel)
-        }
     }
 }
