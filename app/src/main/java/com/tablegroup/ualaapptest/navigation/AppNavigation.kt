@@ -25,7 +25,8 @@ import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 fun AppNavigation(
     viewModel: CityViewModel = hiltViewModel(),
     modifier: Modifier,
-    ) {
+    landscapeMode: Boolean = false,
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -33,21 +34,27 @@ fun AppNavigation(
         startDestination = Screen.CityList.route,
         modifier = modifier
     ) {
-
-        // Lista de ciudades
         composable(Screen.CityList.route) {
-            CityListScreen(
-                viewModel = viewModel,
-                onCityClick = { city ->
-                    navController.navigate(Screen.CityMap.createRoute(city.id))
-                },
-                onInfoClick = { city ->
-                    navController.navigate(city)
-                }
-            )
+            if (landscapeMode) {
+                CityListMapScreen(
+                    onInfoClick = { city ->
+                        navController.navigate(city)
+                    },
+                    viewModel = viewModel
+                )
+            } else {
+                CityListScreen(
+                    viewModel = viewModel,
+                    onCityClick = { city ->
+                        navController.navigate(Screen.CityMap.createRoute(city.id))
+                    },
+                    onInfoClick = { city ->
+                        navController.navigate(city)
+                    }
+                )
+            }
         }
 
-        // Pantalla del mapa
         composable(
             route = Screen.CityMap.route,
             arguments = listOf(navArgument("cityId") { type = NavType.IntType })
@@ -60,14 +67,12 @@ fun AppNavigation(
             )
         }
 
-        composable<City>{ backStackEntry ->
+        composable<City> { backStackEntry ->
             val city: City = backStackEntry.toRoute()
-
             CityInfoScreen(
                 city = city,
                 onBack = { navController.popBackStack() }
             )
         }
-
     }
 }

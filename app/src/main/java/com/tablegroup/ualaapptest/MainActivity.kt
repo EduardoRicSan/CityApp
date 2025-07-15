@@ -42,15 +42,10 @@ class MainActivity : ComponentActivity() {
             bottomBar = { },
             containerColor = MaterialTheme.colorScheme.background,
         ) { innerPaddings ->
-            if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                CityListMapScreen(
-                    onInfoClick = { city ->
-                        navController.navigate(city)
-                    }
-                )
-            } else {
-                AppNavigation(modifier = Modifier.padding(innerPaddings))
-            }
+            AppNavigation(
+                modifier = Modifier.padding(innerPaddings),
+                landscapeMode = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+            )
         }
     }
 }

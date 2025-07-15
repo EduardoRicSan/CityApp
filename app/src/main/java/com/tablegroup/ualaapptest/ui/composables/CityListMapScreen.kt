@@ -25,7 +25,7 @@ import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 
 @Composable
 fun CityListMapScreen(
-    viewModel: CityViewModel = hiltViewModel(),
+    viewModel: CityViewModel,
     modifier: Modifier = Modifier,
     onInfoClick: (City) -> Unit
 ) {

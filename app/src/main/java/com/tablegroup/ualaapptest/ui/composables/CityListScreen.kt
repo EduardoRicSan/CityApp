@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tablegroup.core.utils.remote.NetworkResult
+import com.tablegroup.designsystem.loader.SkeletonLoader
 import com.tablegroup.domain.model.City
 import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 
@@ -73,12 +74,7 @@ fun CityListScreen(
 
         when (citiesResult) {
             is NetworkResult.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = androidx.compose.ui.Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                SkeletonLoader()
             }
             is NetworkResult.Error -> {
                 Text(
