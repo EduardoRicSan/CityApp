@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetCityByIdUseCase @Inject constructor(
     private val repository: CityRepository
 ) {
-    suspend operator fun invoke(id: Int): City? {
+     suspend operator fun invoke(id: Int): City? {
         return repository.getCityById(id)
     }
 }

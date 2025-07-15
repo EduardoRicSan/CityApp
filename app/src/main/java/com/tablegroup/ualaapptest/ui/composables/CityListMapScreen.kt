@@ -26,7 +26,8 @@ import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 @Composable
 fun CityListMapScreen(
     viewModel: CityViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onInfoClick: (City) -> Unit
 ) {
     val selectedCity = rememberSaveable(stateSaver = NullableCitySaver) {
         mutableStateOf<City?>(null)
@@ -36,7 +37,8 @@ fun CityListMapScreen(
         Box(modifier = Modifier.weight(1f)) {
             CityListScreen(
                 viewModel = viewModel,
-                onCityClick = { city -> selectedCity.value = city }
+                onCityClick = { city -> selectedCity.value = city },
+                onInfoClick = onInfoClick
             )
         }
         HorizontalDivider(

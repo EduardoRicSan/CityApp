@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,13 +13,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
@@ -45,7 +50,8 @@ import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 @Composable
 fun CityListScreen(
     viewModel: CityViewModel,
-    onCityClick: (City) -> Unit
+    onCityClick: (City) -> Unit,
+    onInfoClick: (City) -> Unit
 ) {
     val citiesResult by viewModel.filteredCities.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -86,7 +92,8 @@ fun CityListScreen(
                 CityList(
                     cities = (citiesResult as NetworkResult.Success<List<City>>).data,
                     onToggleFavorite = viewModel::toggleFavorite,
-                    onCityClicked = onCityClick
+                    onCityClicked = onCityClick,
+                    onInfoClick = onInfoClick
                 )
             }
         }
@@ -124,11 +131,17 @@ fun SearchBar(
 fun CityList(
     cities: List<City>,
     onToggleFavorite: (Int) -> Unit,
-    onCityClicked: (City) -> Unit
+    onCityClicked: (City) -> Unit,
+    onInfoClick: (City) -> Unit
 ) {
     LazyColumn {
         items(cities) { city ->
-            CityRow(city = city, onToggleFavorite = onToggleFavorite, onCityClicked = onCityClicked)
+            CityRow(
+                city = city,
+                onToggleFavorite = onToggleFavorite,
+                onCityClicked = onCityClicked,
+                onInfoClick = onInfoClick
+                )
         }
     }
 }
@@ -137,13 +150,14 @@ fun CityList(
 fun CityRow(
     city: City,
     onToggleFavorite: (Int) -> Unit,
-    onCityClicked: (City) -> Unit
+    onCityClicked: (City) -> Unit,
+    onInfoClick: (City) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onCityClicked(city) },
+            .clickable { },
         elevation = CardDefaults.cardElevation()
     ) {
         Row(
@@ -152,19 +166,36 @@ fun CityRow(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(Modifier
+                .weight(1f)
+                .height(IntrinsicSize.Min)
+                .clickable { onCityClicked(city) }
+            ) {
                 Text(text = "${city.name}, ${city.country}", style = MaterialTheme.typography.bodySmall)
                 Text(
                     text = "Lat: ${city.lat}, Lon: ${city.lon}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-            IconButton(onClick = { onToggleFavorite(city.id) }) {
-                Icon(
-                    imageVector = if (city.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Toggle Favorite"
-                )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.End
+            ) {
+                IconButton(onClick = { onToggleFavorite(city.id) }) {
+                    Icon(
+                        imageVector = if (city.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Toggle Favorite"
+                    )
+                }
+                IconButton(onClick = { onInfoClick(city) }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Info"
+                    )
+                }
             }
+            Spacer(modifier = Modifier.width(8.dp))
         }
+
     }
 }

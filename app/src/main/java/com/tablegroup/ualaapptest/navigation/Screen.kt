@@ -16,7 +16,7 @@ sealed class Screen(val route: String) {
     data object CityMap : Screen("map/{cityId}") {
         fun createRoute(cityId: Int): String = "map/$cityId"
     }
-    data object CityListMap : Screen("city_list_map")
+    data object CityInfo : Screen("city_info")
 }
 
 @OptIn(ExperimentalPermissionsApi::class)

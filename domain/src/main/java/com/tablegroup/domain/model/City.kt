@@ -1,8 +1,11 @@
 package com.tablegroup.domain.model
 
+import android.os.Parcelable
 import com.tablegroup.data.local.room.entities.CityEntity
 import com.tablegroup.data.remote.dto.CityDto
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class City(
     val id: Int,
     val name: String,

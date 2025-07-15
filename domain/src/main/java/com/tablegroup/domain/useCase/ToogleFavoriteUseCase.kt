@@ -11,7 +11,7 @@ class ToggleFavoriteUseCase @Inject constructor(
         return repository.getFavoriteIdsFlow()
     }
 
-    suspend fun toggleFavorite(cityId: Int) {
+     suspend fun toggleFavorite(cityId: Int) {
         repository.toggleFavorite(cityId)
     }
 }

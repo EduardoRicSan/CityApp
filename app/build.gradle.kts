@@ -98,4 +98,5 @@ dependencies {
     implementation(project(":designSystem"))
     implementation(project(":core"))
     implementation(project(":domain"))
+    testImplementation(kotlin("test"))
 }

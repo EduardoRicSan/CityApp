@@ -6,7 +6,7 @@ import javax.inject.Inject
 class SyncCitiesUseCase @Inject constructor(
     private val repository: CityRepository
 ) {
-    suspend operator fun invoke() {
+     suspend operator fun invoke() {
         repository.syncCitiesIfNeeded()
     }
 }

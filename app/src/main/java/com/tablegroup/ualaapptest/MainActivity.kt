@@ -12,7 +12,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.navigation.compose.rememberNavController
 import com.tablegroup.ualaapptest.navigation.AppNavigation
+import com.tablegroup.ualaapptest.navigation.Screen
 import com.tablegroup.ualaapptest.ui.composables.CityListMapScreen
 import com.tablegroup.ualaapptest.ui.theme.UalaAppTestTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +35,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun UalaMainContent() {
         val configuration = LocalConfiguration.current
-
+        val navController = rememberNavController()
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = { },
@@ -41,7 +43,11 @@ class MainActivity : ComponentActivity() {
             containerColor = MaterialTheme.colorScheme.background,
         ) { innerPaddings ->
             if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                CityListMapScreen()
+                CityListMapScreen(
+                    onInfoClick = { city ->
+                        navController.navigate(city)
+                    }
+                )
             } else {
                 AppNavigation(modifier = Modifier.padding(innerPaddings))
             }

@@ -11,6 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.toRoute
+import com.tablegroup.domain.model.City
+import com.tablegroup.ualaapptest.ui.composables.CityInfoScreen
 import com.tablegroup.ualaapptest.ui.composables.CityListMapScreen
 import com.tablegroup.ualaapptest.ui.composables.CityListScreen
 import com.tablegroup.ualaapptest.ui.composables.CityMapScreen
@@ -37,6 +40,9 @@ fun AppNavigation(
                 viewModel = viewModel,
                 onCityClick = { city ->
                     navController.navigate(Screen.CityMap.createRoute(city.id))
+                },
+                onInfoClick = { city ->
+                    navController.navigate(city)
                 }
             )
         }
@@ -50,6 +56,15 @@ fun AppNavigation(
             CityMapScreen(
                 cityId = cityId,
                 viewModel = viewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<City>{ backStackEntry ->
+            val city: City = backStackEntry.toRoute()
+
+            CityInfoScreen(
+                city = city,
                 onBack = { navController.popBackStack() }
             )
         }
