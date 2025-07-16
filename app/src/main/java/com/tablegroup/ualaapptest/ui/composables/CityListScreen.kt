@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tablegroup.core.utils.remote.NetworkResult
 import com.tablegroup.designsystem.loader.SkeletonLoader
@@ -196,4 +197,48 @@ fun CityRow(
             Spacer(modifier = Modifier.width(8.dp))
         }
     }
+}
+
+/**
+ * Previews
+ */
+
+// Dummy data para preview
+val sampleCity = City(id = 1, name = "Madrid", country = "ES", lat = 40.4168, lon = -3.7038, isFavorite = true)
+val sampleCities = listOf(
+    sampleCity,
+    City(id = 2, name = "Paris", country = "FR", lat = 48.8566, lon = 2.3522, isFavorite = false)
+)
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSearchBar() {
+    SearchBar(
+        query = "Madrid",
+        onQueryChanged = {},
+        onlyFavorites = true,
+        onToggleFavorites = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCityList() {
+    CityList(
+        cities = sampleCities,
+        onToggleFavorite = {},
+        onCityClicked = {},
+        onInfoClick = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCityRow() {
+    CityRow(
+        city = sampleCity,
+        onToggleFavorite = {},
+        onCityClicked = {},
+        onInfoClick = {}
+    )
 }
