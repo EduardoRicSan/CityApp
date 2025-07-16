@@ -7,10 +7,16 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
+/**
+ * Executes a suspend API call safely within a Flow, emitting loading, success, and error states.
+ *
+ * @param call The suspend function representing the API call.
+ * @return A Flow emitting NetworkResult states wrapping the call outcome.
+ */
 suspend fun <T> safeApiCall(call: suspend () -> T): Flow<NetworkResult<T>> = flow {
-    emit(NetworkResult.Loading)
-    val response = withContext(Dispatchers.IO) { call() }
-    emit(NetworkResult.Success(response))
+    emit(NetworkResult.Loading) // Emit loading state
+    val response = withContext(Dispatchers.IO) { call() } // Perform API call on IO dispatcher
+    emit(NetworkResult.Success(response)) // Emit success with data
 }.catch { e ->
-    emit(NetworkResult.Error(e.message ?: "Unknown Error"))
-}.flowOn(Dispatchers.IO)
+    emit(NetworkResult.Error(e.message ?: "Unknown Error")) // Emit error with message
+}.flowOn(Dispatchers.IO) // Flow runs on IO dispatcher
