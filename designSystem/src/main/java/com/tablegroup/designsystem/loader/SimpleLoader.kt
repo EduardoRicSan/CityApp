@@ -6,6 +6,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+/**
+ * A simple full-screen loader using a CircularProgressIndicator.
+ * Useful to indicate loading states in the UI.
+ */
 @Composable
 fun SimpleLoader() {
     Box(

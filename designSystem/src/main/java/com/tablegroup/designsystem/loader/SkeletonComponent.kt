@@ -22,6 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
+/**
+ * Displays a column layout simulating loading content with shimmer placeholders.
+ * Commonly used as a skeleton UI while data is being fetched.
+ */
 @Composable
 fun SkeletonComponent() {
     Column(
@@ -43,11 +47,15 @@ fun SkeletonComponent() {
                 .fillMaxWidth(0.5f)
                 .height(16.dp)
         )
-
     }
 }
 
-
+/**
+ * A composable that creates a shimmer animation using a linear gradient.
+ *
+ * @param modifier Modifier to control layout and size.
+ * @param shape Shape of the placeholder (default is rounded).
+ */
 @Composable
 fun ShimmerLoadingPlaceholder(
     modifier: Modifier = Modifier,
