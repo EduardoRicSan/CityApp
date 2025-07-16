@@ -4,15 +4,16 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
+/**
+ * Wrapper class for managing favorite city IDs using DataStore.
+ */
 class CityDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
@@ -20,7 +21,9 @@ class CityDataStore @Inject constructor(
         private val FAVORITE_IDS_KEY = stringPreferencesKey("favorite_city_ids")
     }
 
-    // Guarda la lista completa de favoritos como JSON
+    /**
+     * Saves the list of favorite city IDs as a JSON string in DataStore.
+     */
     suspend fun saveFavorites(ids: List<Int>) {
         val json = Json.encodeToString(ids)
         dataStore.edit { prefs ->
@@ -28,7 +31,10 @@ class CityDataStore @Inject constructor(
         }
     }
 
-    // Alterna un favorito (agrega o elimina el ID)
+    /**
+     * Toggles a city ID in the favorites list.
+     * Adds it if not present; removes it if already favorited.
+     */
     suspend fun toggleFavorite(id: Int) {
         val currentFavorites = getFavoriteIdsOnce().toMutableSet()
         if (currentFavorites.contains(id)) {
@@ -39,7 +45,10 @@ class CityDataStore @Inject constructor(
         saveFavorites(currentFavorites.toList())
     }
 
-    // Flujo reactivo de IDs favoritos
+    /**
+     * Returns a Flow emitting the current set of favorite city IDs.
+     * Uses JSON decoding and handles errors gracefully.
+     */
     fun getFavoriteIdsFlow(): Flow<Set<Int>> {
         return dataStore.data
             .map { prefs ->
@@ -54,7 +63,10 @@ class CityDataStore @Inject constructor(
             .distinctUntilChanged()
     }
 
-    // Obtener favoritos una sola vez (suspend)
+    /**
+     * Returns the current set of favorite city IDs, read once.
+     * Suspends until the first data is available.
+     */
     suspend fun getFavoriteIdsOnce(): Set<Int> {
         val prefs = dataStore.data.first()
         return prefs[FAVORITE_IDS_KEY]?.let {

@@ -15,16 +15,23 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
+/**
+ * Unit tests for ApiServiceImpl using Ktor's MockEngine.
+ *
+ * Verifies the correct parsing of the cities JSON response and error handling on invalid JSON.
+ */
 class ApiServiceImplTest {
 
     private lateinit var apiService: ApiServiceImpl
 
     @Before
     fun setUp() {
+        // Create HttpClient with MockEngine to simulate network responses
         val client = HttpClient(MockEngine) {
             engine {
                 addHandler { request ->
                     when (request.url.encodedPath) {
+                        // Provide mock JSON response for the cities endpoint
                         "/dce8843a8edbe0b0018b32e137bc2b3a/raw/0996accf70cb0ca0e16f9a99e0ee185fafca7af1/cities.json" -> {
                             respond(
                                 content = """
@@ -53,7 +60,7 @@ class ApiServiceImplTest {
                                 headers = headersOf("Content-Type" to listOf("application/json"))
                             )
                         }
-
+                        // Default mock response for other requests (404)
                         else -> respond(
                             content = "Not Found",
                             status = HttpStatusCode.NotFound,
@@ -63,6 +70,7 @@ class ApiServiceImplTest {
                 }
             }
 
+            // Install JSON content negotiation with lenient and ignoreUnknownKeys enabled
             install(ContentNegotiation) {
                 json(Json {
                     ignoreUnknownKeys = true
@@ -78,6 +86,7 @@ class ApiServiceImplTest {
     fun `getCities returns list of CityDto`() = runTest {
         val cities = apiService.getCities()
 
+        // Assert the parsed list size and sample city fields
         assertEquals(2, cities.size)
         assertEquals("Barcelona", cities[0].name)
         assertEquals("ES", cities[0].country)
@@ -86,6 +95,7 @@ class ApiServiceImplTest {
 
     @Test(expected = SerializationException::class)
     fun `getCities throws exception on invalid json`() = runTest {
+        // Setup a client returning invalid JSON content
         val badClient = HttpClient(MockEngine) {
             engine {
                 addHandler {
@@ -99,7 +109,10 @@ class ApiServiceImplTest {
         }
 
         val badApiService = ApiServiceImpl(badClient)
+
+        // This should throw SerializationException due to malformed JSON
         badApiService.getCities()
     }
 }
+
 

@@ -39,6 +39,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DataModule {
 
+    /**
+     * Provides a configured HttpClient for city-related API calls.
+     * Includes logging and JSON content negotiation with lenient parsing.
+     */
     @Provides
     @Singleton
     @CityClient
@@ -64,6 +68,10 @@ object DataModule {
         }
     }
 
+    /**
+     * Provides a configured HttpClient for weather API calls.
+     * Uses HTTPS protocol and content negotiation similar to city client.
+     */
     @Provides
     @Singleton
     @WeatherClient
@@ -80,16 +88,18 @@ object DataModule {
             )
         }
         defaultRequest {
-
             url {
                 protocol = URLProtocol.HTTPS
-                host = "api.weatherapi.com"
+                host = WeatherApiConstants.BASE_HOST
             }
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
         }
     }
 
+    /**
+     * Provides the ApiService implementation using the city HttpClient.
+     */
     @Provides
     @Singleton
     fun provideApiService(
@@ -97,12 +107,21 @@ object DataModule {
     ): ApiService =
         ApiServiceImpl(client)
 
+    /**
+     * Provides the WeatherApiService implementation using the weather HttpClient
+     * and an ApiKeyProvider for authentication.
+     */
     @Provides
     @Singleton
-    fun provideWeatherApiService(@WeatherClient client: HttpClient, apiKeyProvider: ApiKeyProvider): WeatherApiService =
+    fun provideWeatherApiService(
+        @WeatherClient client: HttpClient,
+        apiKeyProvider: ApiKeyProvider
+    ): WeatherApiService =
         WeatherApiServiceImpl(client, apiKeyProvider)
 
-
+    /**
+     * Provides the Preferences DataStore instance scoped to the application context.
+     */
     @Provides
     @Singleton
     fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
@@ -112,12 +131,19 @@ object DataModule {
             }
         )
     }
+
+    /**
+     * Provides a CityDataStore abstraction over the Preferences DataStore.
+     */
     @Provides
     @Singleton
     fun provideAppPreferences(dataStore: DataStore<Preferences>): CityDataStore {
         return CityDataStore(dataStore)
     }
 
+    /**
+     * Provides the Room database instance for the application.
+     */
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
@@ -128,10 +154,12 @@ object DataModule {
         ).build()
     }
 
+    /**
+     * Provides the DAO to access city data from the Room database.
+     */
     @Provides
     fun provideQuoteDao(database: AppDatabase): CityDao {
         return database.cityDao()
     }
-
 
 }
