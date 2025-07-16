@@ -14,13 +14,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/**
+ * Repository responsible for handling city-related data operations.
+ * Combines API, local DB (Room), and preferences (DataStore) logic.
+ */
 class CityRepository @Inject constructor(
     private val api: ApiService,
     private val dao: CityDao,
     private val cityDataStore: CityDataStore
 )  {
 
-    // Sincroniza la lista descargando e insertando si la DB está vacía
+    /**
+     * Synchronizes cities from API if local DB is empty.
+     */
     suspend fun syncCitiesIfNeeded() = withContext(Dispatchers.IO) {
         val localCities = dao.getAllCities()
         if (localCities.isEmpty()) {
@@ -30,7 +36,7 @@ class CityRepository @Inject constructor(
                         dao.insertCities(remoteResult.data.map { it.toEntity() })
                     }
                     is NetworkResult.Error -> {
-                        // Aquí puedes loguear o manejar el error si quieres
+                        // Optional: handle or log error
                     }
                     else -> Unit
                 }
@@ -38,23 +44,36 @@ class CityRepository @Inject constructor(
         }
     }
 
-    // Exponer flujo de ciudades desde Room
-     fun getCities(): Flow<NetworkResult<List<City>>> = dao.getAllCitiesFlow()
+    /**
+     * Returns a flow of all cities from the DB, mapped to domain model and sorted.
+     */
+    fun getCities(): Flow<NetworkResult<List<City>>> = dao.getAllCitiesFlow()
         .map { entities ->
             val cities = entities.map { it.toDomain() }
                 .sortedWith(compareBy({ it.name.lowercase() }, { it.country.lowercase() }))
             NetworkResult.Success(cities)
         }
 
+    /**
+     * Returns a flow of favorite city IDs from DataStore.
+     */
     fun getFavoriteIdsFlow(): Flow<Set<Int>> = cityDataStore.getFavoriteIdsFlow()
 
+    /**
+     * Toggles favorite status for a given city ID in DataStore.
+     */
     suspend fun toggleFavorite(cityId: Int) {
         cityDataStore.toggleFavorite(cityId)
     }
 
-
+    /**
+     * Returns a flow of favorite IDs (redundant to getFavoriteIdsFlow, consider removing one).
+     */
     fun getFavoriteIds(): Flow<Set<Int>> = cityDataStore.getFavoriteIdsFlow()
 
+    /**
+     * Gets a city by ID from the database.
+     */
     suspend fun getCityById(id: Int): City? {
         return dao.getCityById(id)?.toDomain()
     }

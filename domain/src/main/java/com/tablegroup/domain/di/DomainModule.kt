@@ -18,16 +18,21 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Provides domain-level dependencies such as UseCases and Repositories.
+ * This module is installed in the SingletonComponent, meaning all provided
+ * instances will be scoped as singletons throughout the app lifecycle.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object DomainModule {
 
+    // UseCases for city-related operations
     @Provides
     @Singleton
     fun provideGetCitiesUseCase(
         cityRepository: CityRepository
     ): GetCitiesUseCase = GetCitiesUseCase(cityRepository)
-
 
     @Provides
     @Singleton
@@ -53,7 +58,7 @@ object DomainModule {
         cityRepository: CityRepository
     ): SyncCitiesUseCase = SyncCitiesUseCase(cityRepository)
 
-
+    // Provides implementation of CityRepository
     @Provides
     @Singleton
     fun provideCityRepository(
@@ -62,7 +67,8 @@ object DomainModule {
         cityDataStore: CityDataStore,
     ): CityRepository = CityRepository(api, dao, cityDataStore)
 
-    //WEATHER
+    // WEATHER
+
     @Provides
     @Singleton
     fun provideGetWeatherByCityUseCase(
@@ -74,6 +80,4 @@ object DomainModule {
     fun provideWeatherRepository(
         api: WeatherApiService,
     ): WeatherRepository = WeatherRepository(api)
-
-
 }

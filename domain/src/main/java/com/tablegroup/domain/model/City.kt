@@ -1,10 +1,12 @@
 package com.tablegroup.domain.model
 
-import android.os.Parcelable
 import com.tablegroup.data.local.room.entities.CityEntity
-import com.tablegroup.data.remote.dto.CityDto
 import kotlinx.serialization.Serializable
 
+/**
+ * Domain model representing a City.
+ * Annotated with @Serializable to support Kotlin Serialization.
+ */
 @Serializable
 data class City(
     val id: Int,
@@ -15,20 +17,16 @@ data class City(
     val isFavorite: Boolean = false
 )
 
-fun CityDto.toDomain(isFavorite: Boolean = false): City {
-    return City(
-        id = id,
-        name = name,
-        country = country,
-        lat = coord.lat,
-        lon = coord.lon,
-        isFavorite = isFavorite
-    )
-}
-
+/**
+ * Converts a CityEntity (from database) into a City domain model.
+ */
 fun CityEntity.toDomain() =
     City(id, name, country, lat, lon)
 
+/**
+ * Converts a nullable City object into a map of its properties.
+ * Used for saving/restoring state with rememberSaveable.
+ */
 fun City?.toMap(): Map<String, Any> =
     this?.let {
         mapOf(
@@ -41,6 +39,10 @@ fun City?.toMap(): Map<String, Any> =
         )
     } ?: emptyMap()
 
+/**
+ * Restores a City object from a map of properties.
+ * Used together with toMap() for state restoration.
+ */
 fun Map<String, Any>.toCity(): City? =
     if (this.isEmpty()) null else City(
         id = this["id"] as Int,
@@ -50,3 +52,4 @@ fun Map<String, Any>.toCity(): City? =
         lon = this["lon"] as Double,
         isFavorite = this["isFavorite"] as Boolean
     )
+

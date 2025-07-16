@@ -23,6 +23,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+/**
+ * Unit tests for CityRepository.
+ *
+ * Tests repository behavior for syncing cities, retrieving cities flow,
+ * toggling favorites, and fetching city by ID.
+ */
 class CityRepositoryTest {
 
     private val api: ApiService = mockk()
@@ -35,9 +41,12 @@ class CityRepositoryTest {
         repository = CityRepository(api, dao, dataStore)
     }
 
+    /**
+     * Verifies that when local DB is empty,
+     * syncCitiesIfNeeded fetches cities from API and inserts them into DB.
+     */
     @Test
     fun `syncCitiesIfNeeded inserts cities when DB is empty`() = runTest {
-        // Mocks
         coEvery { dao.getAllCities() } returns emptyList()
         val sampleCityDtos = listOf(
             CityDto(1, "Berlin", "DE", CoordDto(13.4, 52.52)),
@@ -46,14 +55,14 @@ class CityRepositoryTest {
         coEvery { api.getCities() } returns sampleCityDtos
         coEvery { dao.insertCities(any()) } just Runs
 
-        // Ejecuta
         repository.syncCitiesIfNeeded()
 
-        // Verifica que insertCities fue llamado con los datos convertidos a entity
         coVerify { dao.insertCities(match { it.size == 2 }) }
     }
 
-
+    /**
+     * Tests that getCities() returns a sorted list wrapped in NetworkResult.Success.
+     */
     @Test
     fun `getCities should emit sorted success list`() = runTest {
         val cityEntities = listOf(
@@ -67,13 +76,15 @@ class CityRepositoryTest {
             assertTrue(emission is NetworkResult.Success)
             val cities = (emission as NetworkResult.Success).data
             assertEquals(2, cities.size)
-            // Verificar orden alfabético por nombre (amsterdam antes de berlin)
             assertEquals("Amsterdam", cities[0].name)
             assertEquals("Berlin", cities[1].name)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
+    /**
+     * Verifies toggleFavorite calls DataStore's toggleFavorite with correct cityId.
+     */
     @Test
     fun `toggleFavorite calls DataStore correctly`() = runTest {
         coEvery { dataStore.toggleFavorite(1) } just Runs
@@ -83,6 +94,9 @@ class CityRepositoryTest {
         coVerify { dataStore.toggleFavorite(1) }
     }
 
+    /**
+     * Tests getCityById returns the correct domain City model when DAO returns an entity.
+     */
     @Test
     fun `getCityById returns correct domain model`() = runTest {
         val entity = CityEntity(1, "Lima", "PE", -12.0, -77.0)
@@ -95,4 +109,5 @@ class CityRepositoryTest {
         assertEquals("Lima", result?.name)
     }
 }
+
 

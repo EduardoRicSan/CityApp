@@ -2,6 +2,9 @@ package com.tablegroup.domain.model
 
 import com.tablegroup.data.remote.dto.WeatherResponseDTO
 
+/**
+ * UI model representing the weather information to be displayed on the screen.
+ */
 data class UIWeather(
     val city: String = "",
     val fullRegion: String = "",
@@ -13,6 +16,9 @@ data class UIWeather(
     val cloud: Double = 0.0,
 )
 
+/**
+ * Maps WeatherResponseDTO (from API) to UIWeather model for UI representation.
+ */
 fun WeatherResponseDTO.toUIWeather() =
     UIWeather(
         city = this.location?.name.orEmpty(),
