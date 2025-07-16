@@ -10,6 +10,8 @@ import com.tablegroup.domain.model.City
 import com.tablegroup.domain.model.toDomain
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,22 +29,27 @@ class CityRepository @Inject constructor(
     /**
      * Synchronizes cities from API if local DB is empty.
      */
-    suspend fun syncCitiesIfNeeded() = withContext(Dispatchers.IO) {
+    fun syncCitiesIfNeeded(): Flow<NetworkResult<Unit>> = flow {
         val localCities = dao.getAllCities()
         if (localCities.isEmpty()) {
             safeApiCall { api.getCities() }.collect { remoteResult ->
                 when (remoteResult) {
                     is NetworkResult.Success -> {
                         dao.insertCities(remoteResult.data.map { it.toEntity() })
+                        emit(NetworkResult.Success(Unit))
                     }
                     is NetworkResult.Error -> {
-                        // Optional: handle or log error
+                        emit(NetworkResult.Error(remoteResult.message))
                     }
                     else -> Unit
                 }
             }
+        } else {
+            emit(NetworkResult.Success(Unit)) // Nothing to sync
         }
-    }
+    }.flowOn(Dispatchers.IO)
+
+
 
     /**
      * Returns a flow of all cities from the DB, mapped to domain model and sorted.
@@ -52,7 +59,7 @@ class CityRepository @Inject constructor(
             val cities = entities.map { it.toDomain() }
                 .sortedWith(compareBy({ it.name.lowercase() }, { it.country.lowercase() }))
             NetworkResult.Success(cities)
-        }
+        }.flowOn(Dispatchers.IO)
 
     /**
      * Returns a flow of favorite city IDs from DataStore.
