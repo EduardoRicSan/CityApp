@@ -7,7 +7,7 @@ This repository contains an Android app built using **Jetpack Compose**, **Kotli
 - 🗺️ View them on a map.
 - 🌦️ Get current weather for any selected city.
 
-> 🔀 **Note:** The updated codebase is maintained on the [`develop`]([https://github.com/your-repo/your-project/tree/develop](https://github.com/EduardoRicSan/CityApp/tree/develop)) branch.
+> 🔀 **Note:** The updated codebase is maintained on the [`develop`](https://github.com/EduardoRicSan/CityApp/tree/develop) branch.
 
 ---
 
@@ -155,7 +155,7 @@ This app follows **Clean Architecture**, structured in layers:
 ## 🧑‍💻 Author
 
 Developed with ❤️ by **Eduardo Rico**  
-📫 [LinkedIn]([https://linkedin.com/in/your-profile](https://www.linkedin.com/in/eduardorsmx/)) · ✉️ lalo19jers.azul@gmail.com
+📫 [LinkedIn](https://www.linkedin.com/in/eduardorsmx/) · ✉️ lalo19jers.azul@gmail.com
 
 ---
 
