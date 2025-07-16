@@ -20,6 +20,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel managing city data, filtering, and favorites.
+ * Uses multiple use cases for syncing, fetching, toggling favorites, etc.
+ */
 @HiltViewModel
 class CityViewModel @Inject constructor(
     private val syncCitiesUseCase: SyncCitiesUseCase,
@@ -29,14 +33,18 @@ class CityViewModel @Inject constructor(
     private val getCityByIdUseCase: GetCityByIdUseCase
 ) : ViewModel() {
 
-    // Estado para texto de búsqueda
+    /** Search query state */
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    // Estado para filtrar solo favoritos
+    /** State to filter favorites only */
     private val _onlyFavorites = MutableStateFlow(false)
     val onlyFavorites: StateFlow<Boolean> = _onlyFavorites.asStateFlow()
 
+    /**
+     * Combined state flow that filters cities by search query and favorites.
+     * Emits Loading initially and updates when underlying data changes.
+     */
     val filteredCities: StateFlow<NetworkResult<List<City>>> = combine(
         getCitiesUseCase(),
         getFavoriteIdsUseCase(),
@@ -59,26 +67,30 @@ class CityViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkResult.Loading)
 
     init {
+        // Sync cities on ViewModel creation
         viewModelScope.launch(Dispatchers.IO) {
             syncCitiesUseCase()
         }
     }
 
-    // Funciones para actualizar estados
+    /** Update search query */
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
     }
 
+    /** Toggle filter for only favorites */
     fun onToggleOnlyFavorites() {
         _onlyFavorites.value = !_onlyFavorites.value
     }
 
+    /** Toggle a city's favorite status */
     fun toggleFavorite(cityId: Int) {
         viewModelScope.launch {
             toggleFavoriteUseCase.toggleFavorite(cityId)
         }
     }
 
+    /** Get city by ID, suspending function */
     suspend fun getCityById(cityId: Int): City? {
         return getCityByIdUseCase(cityId)
     }

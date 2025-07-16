@@ -1,6 +1,5 @@
 package com.tablegroup.ualaapptest.ui.composables
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,33 +31,47 @@ import com.tablegroup.domain.model.UIWeather
 import com.tablegroup.ualaapptest.R
 import com.tablegroup.ualaapptest.ui.viewmodel.WeatherViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Screen showing detailed weather info for a selected city.
+ *
+ * Fetches weather data on city change and displays loading, error, or success states.
+ *
+ * @param weatherViewModel ViewModel providing weather data.
+ * @param city Selected city to show weather for.
+ * @param onBack Callback for navigation back action.
+ */
 @Composable
 fun CityInfoScreen(
     weatherViewModel: WeatherViewModel = hiltViewModel(),
     city: City,
     onBack: () -> Unit
 ) {
-
+    // Trigger data fetch whenever city changes
     LaunchedEffect(city) {
         weatherViewModel.getWeatherByCity(city.name)
     }
 
+    // Collect weather state and show UI accordingly
     when (val weatherState = weatherViewModel.weatherCity.collectAsStateWithLifecycle().value) {
         is NetworkResult.Loading -> {
-           SimpleLoader()
+            SimpleLoader() // Show loading spinner
         }
-        is NetworkResult.Error -> {
-            Log.d("INFO ERROR", "${weatherState.message}")
-        }
+
+        is NetworkResult.Error -> {}
+
         is NetworkResult.Success -> {
-            CityInfoContent(weatherState.data, onBack)
+            CityInfoContent(weatherState.data, onBack) // Show weather details content
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Displays the detailed weather information UI with a top app bar.
+ *
+ * @param uiWeather Weather data to display.
+ * @param onBack Callback when back button is pressed.
+ */
 @Composable
 fun CityInfoContent(uiWeather: UIWeather, onBack: () -> Unit) {
     Scaffold(
@@ -74,22 +87,47 @@ fun CityInfoContent(uiWeather: UIWeather, onBack: () -> Unit) {
         }
     ) { padding ->
         Column(
-            modifier = Modifier.fillMaxWidth().padding(padding).padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(padding)
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(stringResource(R.string.label_full_info, uiWeather.fullRegion), style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(R.string.label_latest_updated, uiWeather.localTime), style = MaterialTheme.typography.bodyMedium)
+            Text(
+                stringResource(R.string.label_full_info, uiWeather.fullRegion),
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                stringResource(R.string.label_latest_updated, uiWeather.localTime),
+                style = MaterialTheme.typography.bodyMedium
+            )
             WeatherIcon(uiWeather.icon)
-            Text(stringResource(R.string.label_condition, uiWeather.condition), style = MaterialTheme.typography.bodyMedium)
-            Text(stringResource(R.string.label_wind, uiWeather.windKph), style = MaterialTheme.typography.bodyMedium)
-            Text(stringResource(R.string.label_clouds, uiWeather.cloud.toString().plus("%")), style = MaterialTheme.typography.bodyMedium)
-            Text(stringResource(R.string.label_humidity, uiWeather.humidity.toString().plus("%")), style = MaterialTheme.typography.bodyMedium)
+            Text(
+                stringResource(R.string.label_condition, uiWeather.condition),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                stringResource(R.string.label_wind, uiWeather.windKph),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                stringResource(R.string.label_clouds, uiWeather.cloud.toString().plus("%")),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                stringResource(R.string.label_humidity, uiWeather.humidity.toString().plus("%")),
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
-
 }
 
+/**
+ * Loads and displays a weather icon from a URL, fixing URL schema if needed.
+ *
+ * @param iconPath Path or URL of the weather icon.
+ */
 @Composable
 fun WeatherIcon(iconPath: String) {
     val imageUrl = if (iconPath.startsWith("//")) {

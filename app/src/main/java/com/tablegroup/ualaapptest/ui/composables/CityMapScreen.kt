@@ -30,6 +30,10 @@ import com.tablegroup.domain.model.City
 import com.tablegroup.ualaapptest.navigation.RequestLocationPermission
 import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 
+/**
+ * Screen displaying a map centered on a city by its ID.
+ * Fetches city from ViewModel and shows loading until ready.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CityMapScreen(
@@ -37,8 +41,10 @@ fun CityMapScreen(
     viewModel: CityViewModel,
     onBack: () -> Unit
 ) {
+    // Holds the city data loaded from the ViewModel
     var city by remember { mutableStateOf<City?>(null) }
 
+    // Load city when cityId changes
     LaunchedEffect(cityId) {
         city = viewModel.getCityById(cityId)
     }
@@ -56,10 +62,12 @@ fun CityMapScreen(
         }
     ) { padding ->
         if (city != null) {
+            // Request location permission and show map if granted
             RequestLocationPermission {
                 CityMap(city = city!!, modifier = Modifier.padding(padding))
             }
         } else {
+            // Show loading indicator while city is null
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -70,11 +78,15 @@ fun CityMapScreen(
     }
 }
 
-
+/**
+ * Map composable showing a marker at the city's coordinates.
+ * Animates camera to city's location on city change.
+ */
 @Composable
 fun CityMap(city: City, modifier: Modifier = Modifier) {
     val cameraPositionState = rememberCameraPositionState()
 
+    // Animate camera zoom and position when city changes
     LaunchedEffect(city) {
         cameraPositionState.animate(
             update = CameraUpdateFactory.newLatLngZoom(

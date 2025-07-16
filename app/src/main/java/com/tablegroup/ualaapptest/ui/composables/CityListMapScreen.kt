@@ -20,30 +20,42 @@ import com.tablegroup.domain.model.toMap
 import com.tablegroup.ualaapptest.navigation.RequestLocationPermission
 import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 
+/**
+ * Screen displaying a list of cities alongside a map showing the selected city.
+ *
+ * @param viewModel Provides the list of cities and handles city selection.
+ * @param modifier Modifier for styling.
+ * @param onInfoClick Callback invoked when info about a city is requested.
+ */
 @Composable
 fun CityListMapScreen(
     viewModel: CityViewModel,
     modifier: Modifier = Modifier,
     onInfoClick: (City) -> Unit
 ) {
+    // Remember selected city state with a custom saver for process death
     val selectedCity = rememberSaveable(stateSaver = NullableCitySaver) {
         mutableStateOf<City?>(null)
     }
 
     Row(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f)) {
+            // Show the list of cities with callbacks for selection and info
             CityListScreen(
                 viewModel = viewModel,
                 onCityClick = { city -> selectedCity.value = city },
                 onInfoClick = onInfoClick
             )
         }
+
         HorizontalDivider(
             modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp)
         )
+
         Box(modifier = Modifier.weight(1f)) {
+            // Show map with selected city or a prompt if none selected
             selectedCity.value?.let { city ->
                 RequestLocationPermission {
                     CityMap(city = city)
@@ -55,9 +67,10 @@ fun CityListMapScreen(
     }
 }
 
-
-
-
+/**
+ * Custom saver to persist nullable City objects across process death.
+ * Converts City to/from a Map representation.
+ */
 val NullableCitySaver = Saver<City?, Map<String, Any>>(
     save = { city -> city.toMap() },
     restore = { map -> map.toCity() }

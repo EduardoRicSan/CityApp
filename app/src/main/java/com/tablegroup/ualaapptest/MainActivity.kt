@@ -12,34 +12,38 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.navigation.compose.rememberNavController
 import com.tablegroup.ualaapptest.navigation.AppNavigation
-import com.tablegroup.ualaapptest.navigation.Screen
-import com.tablegroup.ualaapptest.ui.composables.CityListMapScreen
 import com.tablegroup.ualaapptest.ui.theme.UalaAppTestTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Main activity of the app with Hilt injection enabled.
+ * Sets up edge-to-edge display and Compose content.
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge() // Enable edge-to-edge UI
         setContent {
             UalaAppTestTheme {
-               UalaMainContent()
+                UalaMainContent()
             }
         }
     }
 
+    /**
+     * Main composable content hosting the app navigation.
+     * Adapts layout based on device orientation.
+     */
     @Composable
     fun UalaMainContent() {
         val configuration = LocalConfiguration.current
-        val navController = rememberNavController()
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            topBar = { },
-            bottomBar = { },
+            topBar = { /* Optional top bar can be added here */ },
+            bottomBar = { /* Optional bottom bar can be added here */ },
             containerColor = MaterialTheme.colorScheme.background,
         ) { innerPaddings ->
             AppNavigation(
@@ -49,3 +53,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
