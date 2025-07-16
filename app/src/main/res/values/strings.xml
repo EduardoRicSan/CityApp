@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">UalaAppTest</string>
+    <string name="label_full_info">Full info: %s</string>
+    <string name="label_latest_updated">Latest updated: %s</string>
+    <string name="label_condition">Condition: %s</string>
+    <string name="label_wind">Wind: %s kph</string>
+    <string name="label_clouds">Clouds: %s </string>
+    <string name="label_humidity">Humidity: %s </string>
 </resources>

@@ -1,4 +1,4 @@
-package com.tablegroup.domain.useCase
+package com.tablegroup.domain.useCase.city
 
 import com.tablegroup.domain.repository.CityRepository
 import javax.inject.Inject

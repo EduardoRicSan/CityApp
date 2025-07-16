@@ -5,7 +5,7 @@ import com.tablegroup.core.utils.remote.NetworkResult
 import com.tablegroup.data.local.dataStore.CityDataStore
 import com.tablegroup.data.local.room.dao.CityDao
 import com.tablegroup.data.local.room.entities.CityEntity
-import com.tablegroup.data.remote.api.ApiService
+import com.tablegroup.data.remote.api.cities.ApiService
 import com.tablegroup.data.remote.dto.CityDto
 import com.tablegroup.data.remote.dto.CoordDto
 import com.tablegroup.domain.repository.CityRepository

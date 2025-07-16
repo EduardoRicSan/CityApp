@@ -6,12 +6,16 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
+import com.tablegroup.core.utils.provider.ApiKeyProvider
 import com.tablegroup.data.local.dataStore.CityDataStore
 import com.tablegroup.data.local.room.AppDatabase
 import com.tablegroup.data.local.room.dao.CityDao
-import com.tablegroup.data.remote.api.ApiConstants
-import com.tablegroup.data.remote.api.ApiService
-import com.tablegroup.data.remote.api.ApiServiceImpl
+import com.tablegroup.data.remote.api.cities.ApiConstants
+import com.tablegroup.data.remote.api.cities.ApiService
+import com.tablegroup.data.remote.api.cities.ApiServiceImpl
+import com.tablegroup.data.remote.api.weather.WeatherApiConstants
+import com.tablegroup.data.remote.api.weather.WeatherApiService
+import com.tablegroup.data.remote.api.weather.WeatherApiServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,7 +41,8 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(): HttpClient = HttpClient(Android) {
+    @CityClient
+    fun provideCityHttpClient(): HttpClient = HttpClient(Android) {
         install(Logging) {
             level = LogLevel.ALL
         }
@@ -61,8 +66,41 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideApiService(client: HttpClient): ApiService =
+    @WeatherClient
+    fun provideWeatherHttpClient(): HttpClient = HttpClient(Android) {
+        install(Logging) {
+            level = LogLevel.ALL
+        }
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                }
+            )
+        }
+        defaultRequest {
+
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "api.weatherapi.com"
+            }
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideApiService(
+        @CityClient client: HttpClient
+    ): ApiService =
         ApiServiceImpl(client)
+
+    @Provides
+    @Singleton
+    fun provideWeatherApiService(@WeatherClient client: HttpClient, apiKeyProvider: ApiKeyProvider): WeatherApiService =
+        WeatherApiServiceImpl(client, apiKeyProvider)
 
 
     @Provides

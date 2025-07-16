@@ -1,4 +1,4 @@
-package com.tablegroup.data.remote.api
+package com.tablegroup.data.remote.api.cities
 
 import com.tablegroup.data.remote.dto.CityDto
 

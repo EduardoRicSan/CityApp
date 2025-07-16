@@ -28,3 +28,25 @@ fun CityDto.toDomain(isFavorite: Boolean = false): City {
 
 fun CityEntity.toDomain() =
     City(id, name, country, lat, lon)
+
+fun City?.toMap(): Map<String, Any> =
+    this?.let {
+        mapOf(
+            "id" to it.id,
+            "name" to it.name,
+            "country" to it.country,
+            "lat" to it.lat,
+            "lon" to it.lon,
+            "isFavorite" to it.isFavorite
+        )
+    } ?: emptyMap()
+
+fun Map<String, Any>.toCity(): City? =
+    if (this.isEmpty()) null else City(
+        id = this["id"] as Int,
+        name = this["name"] as String,
+        country = this["country"] as String,
+        lat = this["lat"] as Double,
+        lon = this["lon"] as Double,
+        isFavorite = this["isFavorite"] as Boolean
+    )

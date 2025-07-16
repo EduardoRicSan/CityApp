@@ -1,4 +1,4 @@
-package com.tablegroup.data.remote.api
+package com.tablegroup.data.remote.api.cities
 
 object ApiConstants {
     const val BASE_URL = "https://gist.githubusercontent.com/hernan-uala/"

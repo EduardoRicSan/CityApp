@@ -1,4 +1,4 @@
-package com.tablegroup.domain.useCase
+package com.tablegroup.domain.useCase.city
 
 import com.tablegroup.core.utils.remote.NetworkResult
 import com.tablegroup.domain.model.City

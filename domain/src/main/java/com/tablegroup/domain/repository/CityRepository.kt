@@ -4,15 +4,12 @@ import com.tablegroup.core.utils.remote.NetworkResult
 import com.tablegroup.core.utils.remote.safeApiCall
 import com.tablegroup.data.local.dataStore.CityDataStore
 import com.tablegroup.data.local.room.dao.CityDao
-import com.tablegroup.data.remote.api.ApiService
+import com.tablegroup.data.remote.api.cities.ApiService
 import com.tablegroup.data.remote.dto.toEntity
 import com.tablegroup.domain.model.City
 import com.tablegroup.domain.model.toDomain
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,15 +24,16 @@ class CityRepository @Inject constructor(
     suspend fun syncCitiesIfNeeded() = withContext(Dispatchers.IO) {
         val localCities = dao.getAllCities()
         if (localCities.isEmpty()) {
-            val remoteResult = safeApiCall { api.getCities() }
-            when (remoteResult) {
-                is NetworkResult.Success -> {
-                    dao.insertCities(remoteResult.data.map { it.toEntity() })
+            safeApiCall { api.getCities() }.collect { remoteResult ->
+                when (remoteResult) {
+                    is NetworkResult.Success -> {
+                        dao.insertCities(remoteResult.data.map { it.toEntity() })
+                    }
+                    is NetworkResult.Error -> {
+                        // Aquí puedes loguear o manejar el error si quieres
+                    }
+                    else -> Unit
                 }
-                is NetworkResult.Error -> {
-                    // log error si es necesario
-                }
-                else -> Unit
             }
         }
     }

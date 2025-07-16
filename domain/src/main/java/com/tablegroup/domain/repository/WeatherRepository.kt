@@ -1,0 +1,24 @@
+package com.tablegroup.domain.repository
+
+import com.tablegroup.core.utils.remote.NetworkResult
+import com.tablegroup.core.utils.remote.safeApiCall
+import com.tablegroup.data.remote.api.weather.WeatherApiService
+import com.tablegroup.domain.model.UIWeather
+import com.tablegroup.domain.model.toUIWeather
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import javax.inject.Inject
+
+
+class WeatherRepository @Inject constructor(
+    private val api: WeatherApiService,
+)  {
+
+    suspend fun getWeatherByCity(city: String): Flow<NetworkResult<UIWeather>> = safeApiCall {
+        api.getWeatherByCity(city).toUIWeather()
+    }.flowOn(Dispatchers.IO)
+
+
+
+}

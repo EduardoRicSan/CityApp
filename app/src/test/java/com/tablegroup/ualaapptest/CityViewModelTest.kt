@@ -3,11 +3,11 @@ package com.tablegroup.ualaapptest
 import app.cash.turbine.test
 import com.tablegroup.core.utils.remote.NetworkResult
 import com.tablegroup.domain.model.City
-import com.tablegroup.domain.useCase.GetCitiesUseCase
-import com.tablegroup.domain.useCase.GetCityByIdUseCase
-import com.tablegroup.domain.useCase.GetFavoriteIdsUseCase
-import com.tablegroup.domain.useCase.SyncCitiesUseCase
-import com.tablegroup.domain.useCase.ToggleFavoriteUseCase
+import com.tablegroup.domain.useCase.city.GetCitiesUseCase
+import com.tablegroup.domain.useCase.city.GetCityByIdUseCase
+import com.tablegroup.domain.useCase.city.GetFavoriteIdsUseCase
+import com.tablegroup.domain.useCase.city.SyncCitiesUseCase
+import com.tablegroup.domain.useCase.city.ToggleFavoriteUseCase
 import com.tablegroup.ualaapptest.ui.viewmodel.CityViewModel
 import io.mockk.coEvery
 import io.mockk.every
@@ -16,14 +16,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 

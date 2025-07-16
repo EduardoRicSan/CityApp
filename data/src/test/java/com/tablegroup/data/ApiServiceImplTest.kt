@@ -1,6 +1,6 @@
 package com.tablegroup.data
 
-import com.tablegroup.data.remote.api.ApiServiceImpl
+import com.tablegroup.data.remote.api.cities.ApiServiceImpl
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond

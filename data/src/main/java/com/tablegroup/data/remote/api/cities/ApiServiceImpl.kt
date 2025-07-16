@@ -1,9 +1,7 @@
-package com.tablegroup.data.remote.api
+package com.tablegroup.data.remote.api.cities
 
-import android.util.Log
 import com.tablegroup.data.remote.dto.CityDto
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json

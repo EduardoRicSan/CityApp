@@ -7,11 +7,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
-suspend fun <T> safeApiCall(apiCall: suspend () -> T): NetworkResult<T> {
-    return try {
-        val response = apiCall()
-        NetworkResult.Success(response)
-    } catch (e: Exception) {
-        NetworkResult.Error(e.localizedMessage ?: "Unknown error")
-    }
-}
+suspend fun <T> safeApiCall(call: suspend () -> T): Flow<NetworkResult<T>> = flow {
+    emit(NetworkResult.Loading)
+    val response = withContext(Dispatchers.IO) { call() }
+    emit(NetworkResult.Success(response))
+}.catch { e ->
+    emit(NetworkResult.Error(e.message ?: "Unknown Error"))
+}.flowOn(Dispatchers.IO)

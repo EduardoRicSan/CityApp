@@ -4,21 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tablegroup.core.utils.remote.NetworkResult
 import com.tablegroup.domain.model.City
-import com.tablegroup.domain.useCase.GetCitiesUseCase
-import com.tablegroup.domain.useCase.GetCityByIdUseCase
-import com.tablegroup.domain.useCase.GetFavoriteIdsUseCase
-import com.tablegroup.domain.useCase.SyncCitiesUseCase
-import com.tablegroup.domain.useCase.ToggleFavoriteUseCase
+import com.tablegroup.domain.useCase.city.GetCitiesUseCase
+import com.tablegroup.domain.useCase.city.GetCityByIdUseCase
+import com.tablegroup.domain.useCase.city.GetFavoriteIdsUseCase
+import com.tablegroup.domain.useCase.city.SyncCitiesUseCase
+import com.tablegroup.domain.useCase.city.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,8 +38,8 @@ class CityViewModel @Inject constructor(
     val onlyFavorites: StateFlow<Boolean> = _onlyFavorites.asStateFlow()
 
     val filteredCities: StateFlow<NetworkResult<List<City>>> = combine(
-        getCitiesUseCase(),              // Flow<NetworkResult<List<City>>>
-        getFavoriteIdsUseCase(),         // Flow<Set<Int>>
+        getCitiesUseCase(),
+        getFavoriteIdsUseCase(),
         _searchQuery,
         _onlyFavorites
     ) { cityResult, favoriteIds, query, onlyFavs ->
@@ -59,7 +56,7 @@ class CityViewModel @Inject constructor(
         } else {
             cityResult
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkResult.Loading())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkResult.Loading)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
