@@ -21,10 +21,17 @@ interface CityDao {
     suspend fun getAllCities(): List<CityEntity>
 
     /**
-     * Returns a Flow emitting lists of cities sorted by name and country.
-     * Supports reactive UI updates when the database changes.
+     * Returns a Flow that emits the list of all cities from the database,
+     * sorted alphabetically by name and country in a case-insensitive manner.
+     *
+     * The SQL clause `COLLATE NOCASE` specifies that the sorting
+     * should ignore case differences (e.g., "Amsterdam" and "amsterdam"
+     * are treated as equal for ordering purposes).
+     *
+     * This Flow will emit updated lists automatically whenever the underlying
+     * database data changes, enabling reactive UI updates.
      */
-    @Query("SELECT * FROM cities ORDER BY LOWER(name), LOWER(country)")
+    @Query("SELECT * FROM cities ORDER BY name COLLATE NOCASE ASC, country COLLATE NOCASE ASC")
     fun getAllCitiesFlow(): Flow<List<CityEntity>>
 
     /**

@@ -12,6 +12,7 @@ import com.tablegroup.domain.model.City
 import com.tablegroup.domain.model.toDomain
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -76,10 +77,9 @@ class CityRepository @Inject constructor(
      * Returns a flow of all cities from the DB, mapped to domain model and sorted.
      */
     fun getCities(): Flow<NetworkResult<List<City>>> = dao.getAllCitiesFlow()
+        .distinctUntilChanged()
         .map { entities ->
-            val cities = entities.map { it.toDomain() }
-                .sortedWith(compareBy({ it.name.lowercase() }, { it.country.lowercase() }))
-            NetworkResult.Success(cities)
+            NetworkResult.Success(entities.map { it.toDomain() })
         }.flowOn(Dispatchers.IO)
 
     /**
