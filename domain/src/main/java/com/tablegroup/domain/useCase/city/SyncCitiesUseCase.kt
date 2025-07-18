@@ -1,5 +1,6 @@
 package com.tablegroup.domain.useCase.city
 
+import android.util.Log
 import com.tablegroup.domain.repository.CityRepository
 import javax.inject.Inject
 
@@ -15,6 +16,8 @@ class SyncCitiesUseCase @Inject constructor(
      * Invokes the synchronization process.
      */
     suspend operator fun invoke() {
-        repository.syncCitiesIfNeeded()
+        repository.syncCitiesIfNeeded().collect { result ->
+            Log.d("SyncCitiesUseCase", "Sync result: $result")
+        }
     }
 }

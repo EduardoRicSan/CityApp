@@ -1,5 +1,6 @@
 package com.tablegroup.ualaapptest.ui.composables
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tablegroup.core.utils.remote.NetworkResult
@@ -52,6 +54,7 @@ fun CityListScreen(
     val citiesResult by viewModel.filteredCities.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val onlyFavorites by viewModel.onlyFavorites.collectAsState()
+    val isSyncing by viewModel.isSyncing.collectAsState()
 
     Column(
         modifier = Modifier
@@ -67,24 +70,38 @@ fun CityListScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        when (citiesResult) {
-            is NetworkResult.Loading -> SkeletonLoader()
-            is NetworkResult.Error -> Text(
-                text = "Error loading cities",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(16.dp)
-            )
-            is NetworkResult.Success -> {
-                CityList(
-                    cities = (citiesResult as NetworkResult.Success<List<City>>).data,
-                    onToggleFavorite = viewModel::toggleFavorite,
-                    onCityClicked = onCityClick,
-                    onInfoClick = onInfoClick
+        if (isSyncing) {
+            SkeletonLoader()
+        } else {
+            when (citiesResult) {
+                is NetworkResult.Loading -> SkeletonLoader()
+                is NetworkResult.Error -> Text(
+                    text = "Error loading cities",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
                 )
+                is NetworkResult.Success -> {
+                    val cities = (citiesResult as NetworkResult.Success<List<City>>).data
+                    if (cities.isEmpty()) {
+                        Text(
+                            text = "No cities found",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        CityList(
+                            cities = cities,
+                            onToggleFavorite = viewModel::toggleFavorite,
+                            onCityClicked = onCityClick,
+                            onInfoClick = onInfoClick
+                        )
+                    }
+                }
             }
         }
     }
 }
+
 
 /**
  * Search bar with text input and favorites filter toggle button.

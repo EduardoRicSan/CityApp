@@ -1,11 +1,10 @@
 package com.tablegroup.core.utils.remote
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
 
 /**
  * Executes a suspend API call safely within a Flow, emitting loading, success, and error states.
@@ -13,10 +12,25 @@ import kotlinx.coroutines.withContext
  * @param call The suspend function representing the API call.
  * @return A Flow emitting NetworkResult states wrapping the call outcome.
  */
-suspend fun <T> safeApiCall(call: suspend () -> T): Flow<NetworkResult<T>> = flow {
-    emit(NetworkResult.Loading) // Emit loading state
-    val response = withContext(Dispatchers.IO) { call() } // Perform API call on IO dispatcher
-    emit(NetworkResult.Success(response)) // Emit success with data
-}.catch { e ->
-    emit(NetworkResult.Error(e.message ?: "Unknown Error")) // Emit error with message
-}.flowOn(Dispatchers.IO) // Flow runs on IO dispatcher
+suspend fun <T> safeApiCall(
+    apiCall: suspend () -> T
+): Flow<NetworkResult<T>> = flow {
+    try {
+        Log.d("safeApiCall", "Starting API call...")
+        emit(NetworkResult.Loading) // Emitimos loading antes de la llamada
+
+        val result = apiCall()
+        Log.d("safeApiCall", "API call successful, result size or value: ${
+            when(result) {
+                is Collection<*> -> result.size
+                else -> result.toString()
+            }
+        }")
+
+        emit(NetworkResult.Success(result)) // Emitimos éxito con resultado
+
+    } catch (e: Exception) {
+        Log.e("safeApiCall", "API call failed: ${e.localizedMessage}", e)
+        emit(NetworkResult.Error(e.localizedMessage ?: "Unknown error"))
+    }
+}.flowOn(Dispatchers.IO)

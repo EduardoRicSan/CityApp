@@ -1,5 +1,6 @@
 package com.tablegroup.ualaapptest.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tablegroup.core.utils.remote.NetworkResult
@@ -33,6 +34,9 @@ class CityViewModel @Inject constructor(
     private val getCityByIdUseCase: GetCityByIdUseCase
 ) : ViewModel() {
 
+    private val _isSyncing = MutableStateFlow(false)
+    val isSyncing: StateFlow<Boolean> = _isSyncing.asStateFlow()
+
     /** Search query state */
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -52,6 +56,8 @@ class CityViewModel @Inject constructor(
         _onlyFavorites
     ) { cityResult, favoriteIds, query, onlyFavs ->
 
+        Log.d("CityViewModel", "CityResult: $cityResult")
+
         if (cityResult is NetworkResult.Success) {
             val filtered = cityResult.data.map { city ->
                 city.copy(isFavorite = favoriteIds.contains(city.id))
@@ -67,9 +73,10 @@ class CityViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkResult.Loading)
 
     init {
-        // Sync cities on ViewModel creation
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
+            _isSyncing.value = true
             syncCitiesUseCase()
+            _isSyncing.value = false
         }
     }
 

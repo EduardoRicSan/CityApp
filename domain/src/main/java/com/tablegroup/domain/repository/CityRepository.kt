@@ -1,9 +1,11 @@
 package com.tablegroup.domain.repository
 
+import android.util.Log
 import com.tablegroup.core.utils.remote.NetworkResult
 import com.tablegroup.core.utils.remote.safeApiCall
 import com.tablegroup.data.local.dataStore.CityDataStore
 import com.tablegroup.data.local.room.dao.CityDao
+import com.tablegroup.data.local.room.entities.CityEntity
 import com.tablegroup.data.remote.api.cities.ApiService
 import com.tablegroup.data.remote.dto.toEntity
 import com.tablegroup.domain.model.City
@@ -29,26 +31,46 @@ class CityRepository @Inject constructor(
      * Synchronizes cities from API if local DB is empty.
      */
     fun syncCitiesIfNeeded(): Flow<NetworkResult<Unit>> = flow {
-        val localCities = dao.getAllCities()
-        if (localCities.isEmpty()) {
-            safeApiCall { api.getCities() }.collect { remoteResult ->
-                when (remoteResult) {
-                    is NetworkResult.Success -> {
-                        dao.insertCities(remoteResult.data.map { it.toEntity() })
-                        emit(NetworkResult.Success(Unit))
+        try {
+            val localCities = dao.getAllCities()
+            Log.d("CityRepository", "Local DB cities count before sync: ${localCities.size}")
+
+            if (localCities.isEmpty()) {
+                Log.d("CityRepository", "Starting cities sync from remote API...")
+                safeApiCall { api.getCities() }.collect { remoteResult ->
+                    when (remoteResult) {
+                        is NetworkResult.Success -> {
+                            Log.d("CityRepository", "Fetched remote cities count: ${remoteResult.data.size}")
+                            // Inserción en base de datos
+                            insertCitiesInBatches(remoteResult.data.map { it.toEntity() })
+                            Log.d("CityRepository", "Inserted cities into DB successfully")
+                            emit(NetworkResult.Success(Unit))
+                        }
+                        is NetworkResult.Error -> {
+                            Log.e("CityRepository", "Error fetching cities: ${remoteResult.message}")
+                            emit(NetworkResult.Error(remoteResult.message))
+                        }
+                        else -> {
+                            Log.w("CityRepository", "Unexpected NetworkResult state during sync")
+                        }
                     }
-                    is NetworkResult.Error -> {
-                        emit(NetworkResult.Error(remoteResult.message))
-                    }
-                    else -> Unit
                 }
+            } else {
+                Log.d("CityRepository", "Local DB already has cities, skipping sync.")
+                emit(NetworkResult.Success(Unit))
             }
-        } else {
-            emit(NetworkResult.Success(Unit)) // Nothing to sync
+        } catch (e: Exception) {
+            Log.e("CityRepository", "Exception during syncCitiesIfNeeded: ${e.message}", e)
+            emit(NetworkResult.Error("Exception: ${e.localizedMessage ?: "Unknown error"}"))
         }
     }.flowOn(Dispatchers.IO)
 
-
+    suspend fun insertCitiesInBatches(cities: List<CityEntity>, batchSize: Int = 5000) {
+        for (chunk in cities.chunked(batchSize)) {
+            dao.insertCities(chunk)
+            Log.d("CityRepository", "Inserted batch of ${chunk.size} cities")
+        }
+    }
 
     /**
      * Returns a flow of all cities from the DB, mapped to domain model and sorted.

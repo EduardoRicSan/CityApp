@@ -1,5 +1,6 @@
 package com.tablegroup.data.remote.api.cities
 
+import android.util.Log
 import com.tablegroup.data.remote.dto.CityDto
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -18,7 +19,10 @@ class ApiServiceImpl(
      */
     override suspend fun getCities(): List<CityDto> {
         val responseText = client.get(ApiConstants.GET_CITIES).bodyAsText()
-        return JsonUtils.json.decodeFromString(responseText)
+        Log.d("ApiServiceImpl", "Raw response length: ${responseText.length}")
+        val cityList = JsonUtils.json.decodeFromString<List<CityDto>>(responseText)
+        Log.d("ApiServiceImpl", "Parsed cities count: ${cityList.size}")
+        return cityList
     }
 }
 
